@@ -43,52 +43,70 @@ public sealed class ExcelHandlerService : IExcelHandler
         #region Logo
         var logoPath = "wwwroot/img/utp-logo.png";
         var logo = worksheet.AddPicture(logoPath)
-                            .MoveTo(worksheet.Cell("A1"), 10, 10);
-                            //.WithSize(100, 100); // Set the size as needed
+                            .MoveTo(worksheet.Cell("A1"), 5, 20)
+                            .WithSize(235, 105);
         #endregion
 
-        #region Caption
-        IXLRange captionheaderMergedCell = worksheet.Range("J1:L1");
-        captionheaderMergedCell.Merge();
+        #region Caption table
+        StyleAndMergeRange(worksheet, "J1:L1", "LEYENDA");
+        StyleAndMergeRange(worksheet, "K2:L2", "ASISTIÓ");
+        StyleAndMergeRange(worksheet, "K3:L3", "FALTÓ");
+        StyleAndMergeRange(worksheet, "K4:L4", "TARDANZA");
 
-        captionheaderMergedCell.Value = "LEYENDA";
-
-        captionheaderMergedCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-        captionheaderMergedCell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
-
-        captionheaderMergedCell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
-        captionheaderMergedCell.Style.Font.FontSize = 14;
-        captionheaderMergedCell.Style.Font.Bold = true;
+        StyleAndSetValue(worksheet, "J2", "A");
+        StyleAndSetValue(worksheet, "J3", "F");
+        StyleAndSetValue(worksheet, "J4", "T");
         #endregion
 
-        //worksheet.Column(1).Width = 7.45;
-        worksheet.Column(1).Width = ExcelHelper.CmToNoC(1.34);
-        worksheet.Column(2).Width = ExcelHelper.CmToNoC(11.79);
-        worksheet.Column(3).Width = ExcelHelper.CmToNoC(3.71);
-        worksheet.Column(4).Width = ExcelHelper.CmToNoC(2.97);
+        #region Set column widths
+        worksheet.Column(1).Width = ExcelHelper.PixelsToNoC(47);
+        worksheet.Column(2).Width = ExcelHelper.PixelsToNoC(420);
+        worksheet.Column(3).Width = ExcelHelper.PixelsToNoC(131);
+        worksheet.Column(4).Width = ExcelHelper.PixelsToNoC(107);
 
-        worksheet.Row(1).Height = ExcelHelper.ConvertCmToPoints(0.67);
-        worksheet.Row(2).Height = ExcelHelper.ConvertCmToPoints(0.72);
-        worksheet.Row(3).Height = ExcelHelper.ConvertCmToPoints(0.67);
-        worksheet.Row(4).Height = ExcelHelper.ConvertCmToPoints(0.81);
-        worksheet.Row(5).Height = ExcelHelper.ConvertCmToPoints(0.48);
-        worksheet.Row(6).Height = ExcelHelper.ConvertCmToPoints(0.77);
-        worksheet.Row(7).Height = ExcelHelper.ConvertCmToPoints(0.72);
-        worksheet.Row(8).Height = ExcelHelper.ConvertCmToPoints(2.49);
-        worksheet.Row(9).Height = ExcelHelper.ConvertCmToPoints(1.10);
-        worksheet.Row(10).Height = ExcelHelper.ConvertCmToPoints(0.91);
-        worksheet.Row(11).Height = ExcelHelper.ConvertCmToPoints(0.67);
-
-        for (int i = 12; i <= 58; i++)
+        for (int i = 5; i <= 12; i++)
         {
-            worksheet.Row(i).Height = ExcelHelper.ConvertCmToPoints(1.05);
-        }        
+            worksheet.Column(i).Width = ExcelHelper.PixelsToNoC(131);
+        }
+        #endregion
+
+        #region Set row heights
+        worksheet.Row(1).Height = ExcelHelper.PixelsToPoints(27);
+        worksheet.Row(2).Height = ExcelHelper.PixelsToPoints(27);
+        worksheet.Row(3).Height = ExcelHelper.PixelsToPoints(27);
+        worksheet.Row(4).Height = ExcelHelper.PixelsToPoints(35);
+        worksheet.Row(5).Height = ExcelHelper.PixelsToPoints(18);
+        worksheet.Row(6).Height = ExcelHelper.PixelsToPoints(31);
+        worksheet.Row(7).Height = ExcelHelper.PixelsToPoints(31);
+        worksheet.Row(8).Height = ExcelHelper.PixelsToPoints(64);
+        worksheet.Row(9).Height = ExcelHelper.PixelsToPoints(45);
+        worksheet.Row(10).Height = ExcelHelper.PixelsToPoints(36);
+
+        for (int i = 11; i <= 58; i++)
+        {
+            worksheet.Row(i).Height = ExcelHelper.PixelsToPoints(40);
+        }
+        #endregion
+
+        #region Student column header
+        StyleAndMergeRange(worksheet, "A7:A10", "No", "#D9D9D9");
+        StyleAndMergeRange(worksheet, "B7:B10", "APELLIDOS Y NOMBRES", "#D9D9D9");
+        StyleAndMergeRange(worksheet, "C7:C10", "Modalidad", "#D9D9D9");
+        StyleAndMergeRange(worksheet, "D7:D10", "Estado", "#D9D9D9");
+        StyleAndSetValue(worksheet, "E6", "", "#404040");
+        StyleAndSetValue(worksheet, "F6", "", "#404040");
+        StyleAndSetValue(worksheet, "G6", "", "#404040");
+        StyleAndSetValue(worksheet, "H6", "", "#404040");
+        #endregion
         #endregion
 
         foreach (var cell in worksheet.CellsUsed())
         {
             cell.Style.Font.FontName = "Arial"; // Set font to Arial
         }
+
+        worksheet.SheetView.FreezeRows(10);
+        worksheet.SheetView.FreezeColumns(2);
 
         // Save to MemoryStream instead of file
         var stream = new MemoryStream();
@@ -98,5 +116,43 @@ public sealed class ExcelHandlerService : IExcelHandler
         stream.Position = 0;
 
         return stream;
+    }
+
+    public void StyleAndMergeRange(IXLWorksheet worksheet, string rangeAddress, string value, string? hexColor = null)
+    {
+        IXLRange range = worksheet.Range(rangeAddress);
+        range.Merge();
+
+        range.Value = value;
+
+        range.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+        range.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+
+        range.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+        range.Style.Font.FontSize = 14;
+        range.Style.Font.Bold = true;
+
+        if (!string.IsNullOrEmpty(hexColor))
+        {
+            range.Style.Fill.BackgroundColor = XLColor.FromHtml(hexColor);
+        }
+    }
+
+    private void StyleAndSetValue(IXLWorksheet worksheet, string cellAddress, string value, string? hexColor = null)
+    {
+        IXLCell cell = worksheet.Cell(cellAddress);
+        cell.Value = value;
+
+        cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+        cell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+
+        cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+        cell.Style.Font.FontSize = 14;
+        cell.Style.Font.Bold = true;
+
+        if (!string.IsNullOrEmpty(hexColor))
+        {
+            cell.Style.Fill.BackgroundColor = XLColor.FromHtml(hexColor);
+        }
     }
 }
