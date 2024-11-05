@@ -1,7 +1,6 @@
 using Application.Core.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.JSInterop;
 
 namespace Attendance.Generator.Components.Pages;
@@ -13,6 +12,49 @@ public partial class Home
 
     [Inject]
     public required IJSRuntime JSRuntime { get; init; }
+
+    private bool isLegoSelected = false;
+
+    private List<DateInput> datesContainer;
+
+    private string minDate = DateTime.Now.ToString("yyyy-MM-dd");
+
+    private int selectedSessions = 2;
+
+    private class DateInput
+    {
+        public string LabelText { get; set; }
+        public string ClassName { get; set; }
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        UpdateDatesContainer(selectedSessions);
+    }
+
+    private void OnSessionChange(ChangeEventArgs e)
+    {
+        selectedSessions = int.Parse(e.Value.ToString());
+        UpdateDatesContainer(selectedSessions);
+    }
+
+    private void UpdateDatesContainer(int numSessions)
+    {
+        datesContainer = new List<DateInput>();
+
+        for (int i = 0; i < numSessions; i++)
+        {
+            var className = numSessions == 2 ? "flex-1 min-w-[20%]" : "flex-1 min-w-[45%] md:min-w-[22%] 2xl:min-w-[10%]";
+            datesContainer.Add(new DateInput { LabelText = $"Clase {i + 1}", ClassName = className });
+        }
+    }
+
+    private void OnRadioChange(ChangeEventArgs e)
+    {
+        var selectedValue = e.Value.ToString();
+        isLegoSelected = selectedValue == "Lego";
+    }
 
     private async void HandleClick()
     {

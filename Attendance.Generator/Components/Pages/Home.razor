@@ -48,32 +48,35 @@
                     <legend class="sr-only">Tipo de lista</legend>
 
                     <div class="mb-2 flex items-center">
-                        <input id="country-option-1" type="radio" name="tipo" value="Normal" class="h-4 w-4 border-gray-300 focus:ring-2 focus:ring-sky-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-sky-600 dark:focus:bg-sky-600" checked>
+                        <input id="country-option-1" type="radio" name="tipo" value="Normal" class="h-4 w-4 border-gray-300 focus:ring-2 focus:ring-sky-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-sky-600 dark:focus:bg-sky-600" @onchange="OnRadioChange" checked>
                         <label for="country-option-1" class="ms-2 block text-sm font-medium text-gray-900 dark:text-gray-300">Normal</label>
                     </div>
 
                     <div class="mb-2 flex items-center">
-                        <input id="country-option-2" type="radio" name="tipo" value="Lego" class="h-4 w-4 border-gray-300 focus:ring-2 focus:ring-sky-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-sky-600 dark:focus:bg-sky-600">
+                        <input id="country-option-2" type="radio" name="tipo" value="Lego" @onchange="OnRadioChange" class="h-4 w-4 border-gray-300 focus:ring-2 focus:ring-sky-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-sky-600 dark:focus:bg-sky-600">
                         <label for="country-option-2" class="ms-2 block text-sm font-medium text-gray-900 dark:text-gray-300">LEGO</label>
                     </div>
                 </fieldset>
             </div>
 
             <div id="second-file" class="mb-2 flex-grow">
-                <div class="relative mb-2 w-full">
-                    <input type="file" id="comparative-file" class="opacity-0 absolute inset-0 h-full w-full cursor-pointer" required>
-                    <label for="comparative-file" class="flex w-full cursor-pointer items-center justify-center rounded-lg border border-gray-300 bg-gray-200 px-4 py-2 text-gray-900 focus-within:ring-2 focus-within:ring-sky-500 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600 dark:focus-within:ring-sky-600">
-                        <span class="mr-2 inline-block">Subir segundo archivo</span>
-                        <FileSvg />
-                    </label>
-                </div>
+                @if (isLegoSelected)
+                {
+                    <div class="relative mb-2 w-full">
+                        <input type="file" id="comparative-file" class="opacity-0 absolute inset-0 h-full w-full cursor-pointer" required>
+                        <label for="comparative-file" class="flex w-full cursor-pointer items-center justify-center rounded-lg border border-gray-300 bg-gray-200 px-4 py-2 text-gray-900 focus-within:ring-2 focus-within:ring-sky-500 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600 dark:focus-within:ring-sky-600">
+                            <span class="mr-2 inline-block">Subir segundo archivo</span>
+                            <FileSvg />
+                        </label>
+                    </div>
+                }                
             </div>
         </div>
 
         <div class="md:flex md:space-x-4 lg:flex lg:space-x-4">
             <div class="flex-shrink-0 mb-2 md:w-1/6">
                 <label for="num-sessions" class="mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300">Número de sesiones</label>
-                <select id="num-sessions" class="mb-3 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-base text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-300 focus:border-sky-300 dark:bg-gray-700 dark:text-gray-300 dark:placeholder-gray-500 dark:border-gray-600 dark:focus:ring-sky-600 dark:focus:border-sky-600">
+                <select id="num-sessions" @onchange="OnSessionChange" class="mb-3 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-base text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-300 focus:border-sky-300 dark:bg-gray-700 dark:text-gray-300 dark:placeholder-gray-500 dark:border-gray-600 dark:focus:ring-sky-600 dark:focus:border-sky-600">
                     <option value="2">2</option>
                     <option value="4">4</option>
                     <option value="8">8</option>
@@ -81,7 +84,18 @@
             </div>
 
             <div id="dates-sessions" class="mb-2 md:flex-grow">
-
+                <div class="flex flex-wrap gap-4">
+                    @if (datesContainer is not null)
+                    {
+                        @foreach (var dateInput in datesContainer)
+                        {
+                            <div class="@dateInput.ClassName">
+                                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">@dateInput.LabelText</label>
+                                <input type="date" min="@minDate" class="block w-full mb-3 px-3 py-2 rounded-lg border border-gray-300 bg-white text-base text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-300 focus:border-sky-300 dark:bg-gray-700 dark:text-gray-300 dark:placeholder-gray-500 dark:border-gray-600 dark:focus:ring-sky-600 dark:focus:border-sky-600" />
+                            </div>
+                        }
+                    }
+                </div>                
             </div>
         </div>
 
@@ -97,11 +111,14 @@
             </div>
 
             <div id="students-status-section" class="mb-2 w-1/2">
-                <label for="students-status" class="mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300">Estado de los alumnos</label>
-                <select id="students-status" class="mb-3 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-base text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-300 focus:border-sky-300 dark:bg-gray-700 dark:text-gray-300 dark:placeholder-gray-500 dark:border-gray-600 dark:focus:ring-sky-600 dark:focus:border-sky-600">
-                    <option value="1">Inscrito</option>
-                    <option value="2">Baja</option>
-                </select>
+                @if (isLegoSelected)
+                {
+                    <label for="students-status" class="mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300">Estado de los alumnos</label>
+                    <select id="students-status" class="mb-3 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-base text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-300 focus:border-sky-300 dark:bg-gray-700 dark:text-gray-300 dark:placeholder-gray-500 dark:border-gray-600 dark:focus:ring-sky-600 dark:focus:border-sky-600">
+                        <option value="1">Inscrito</option>
+                        <option value="2">Baja</option>
+                    </select>
+                }                
             </div>
         </div>
 

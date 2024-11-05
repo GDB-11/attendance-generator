@@ -1,4 +1,11 @@
 ﻿document.addEventListener('DOMContentLoaded', (event) => {
+    const studentsStatusSection = document.getElementById('students-status-section');
+
+    // Save the initial content of the div
+    const studentsStatusSectionContent = studentsStatusSection.innerHTML;
+});
+
+function handleSecondFileInput() {
     const fieldset = document.querySelector('fieldset');
     const radioButtons = fieldset.querySelectorAll('input[type="radio"]');
     const secondFileDiv = document.getElementById('second-file');
@@ -29,7 +36,9 @@
 
     // Initial check to set the correct content on load
     updateDivContent();
-    //--------------------------------------------------------------------------------------------------------------------------------------------------------------
+}
+
+function handleCalendars() {
     const numSessionsSelect = document.getElementById('num-sessions');
     const datesSessionsDiv = document.getElementById('dates-sessions');
 
@@ -67,9 +76,4 @@
     }
 
     updateDatePickers();
-    //--------------------------------------------------------------------------------------------------------------------------------------------------------------
-    const studentsStatusSection = document.getElementById('students-status-section');
-
-    // Save the initial content of the div
-    const studentsStatusSectionContent = studentsStatusSection.innerHTML;
-});
+}
