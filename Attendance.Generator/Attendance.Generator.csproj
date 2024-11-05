@@ -19,7 +19,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="wwwroot\img\utp-logo.png" />
+    <EmbeddedResource Include="wwwroot\img\utp-logo.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

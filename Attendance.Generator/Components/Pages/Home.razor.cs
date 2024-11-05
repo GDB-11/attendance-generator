@@ -1,4 +1,5 @@
 using Application.Core.Interfaces;
+using Attendance.Generator.Models.Home;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
@@ -15,17 +16,11 @@ public partial class Home
 
     private bool isLegoSelected = false;
 
-    private List<DateInput> datesContainer;
+    private List<DateInputModel>? datesContainer;
 
     private string minDate = DateTime.Now.ToString("yyyy-MM-dd");
 
     private int selectedSessions = 2;
-
-    private class DateInput
-    {
-        public string LabelText { get; set; }
-        public string ClassName { get; set; }
-    }
 
     protected override void OnInitialized()
     {
@@ -41,12 +36,12 @@ public partial class Home
 
     private void UpdateDatesContainer(int numSessions)
     {
-        datesContainer = new List<DateInput>();
+        datesContainer = new List<DateInputModel>();
 
         for (int i = 0; i < numSessions; i++)
         {
             var className = numSessions == 2 ? "flex-1 min-w-[20%]" : "flex-1 min-w-[45%] md:min-w-[22%] 2xl:min-w-[10%]";
-            datesContainer.Add(new DateInput { LabelText = $"Clase {i + 1}", ClassName = className });
+            datesContainer.Add(new DateInputModel { LabelText = $"Clase {i + 1}", ClassName = className });
         }
     }
 

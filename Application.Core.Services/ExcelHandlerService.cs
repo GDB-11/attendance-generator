@@ -40,6 +40,13 @@ public sealed class ExcelHandlerService : IExcelHandler
         subheaderMergedCell.Style.Font.Bold = true;
         #endregion
 
+        #region Logo
+        var logoPath = "wwwroot/img/utp-logo.png";
+        var logo = worksheet.AddPicture(logoPath)
+                            .MoveTo(worksheet.Cell("A1"), 10, 10);
+                            //.WithSize(100, 100); // Set the size as needed
+        #endregion
+
         #region Caption
         IXLRange captionheaderMergedCell = worksheet.Range("J1:L1");
         captionheaderMergedCell.Merge();
