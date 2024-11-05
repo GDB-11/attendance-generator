@@ -1,0 +1,8 @@
+﻿<label for="@Id" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">@Label</label>
+<div class="flex">
+    <span class="border-e-0 inline-flex items-center rounded-s-md border border-gray-300 bg-gray-200 px-3 text-sm text-gray-900 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
+        @ChildContent
+    </span>
+    <InputText id="@Id" type="@Type" class="flex-1 block w-full min-w-0 rounded-none rounded-e-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="@PlaceholderText" @attributes="@(IsRequired ? new Dictionary<string, object> { { "required", "required" } } : null)"
+               Value="@Value" ValueChanged="HandleInput" />
+</div>

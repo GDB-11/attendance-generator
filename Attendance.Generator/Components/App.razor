@@ -1,0 +1,28 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <link href="css/app.css" rel="stylesheet" />
+    <link rel="stylesheet" href="Attendance.Generator.styles.css" />
+    <HeadOutlet />
+    <script>
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
+    </script>
+</head>
+
+<body class="bg-stone-300 dark:bg-gray-700">
+    <Routes />
+    <script src="_framework/blazor.web.js"></script>
+    <script src="js/darkmode.js"></script>
+    <script src="js/excelform.js"></script>
+    <script src="js/site.js"></script>
+</body>
+
+</html>

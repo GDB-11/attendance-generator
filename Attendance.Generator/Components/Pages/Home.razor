@@ -1,0 +1,112 @@
+﻿@page "/"
+
+@rendermode InteractiveServer
+
+<PageTitle>Listas</PageTitle>
+
+<section>
+    <h1 class="mb-4 text-center text-2xl text-sky-700 dark:text-gray-300 lg:text-left">Generador de listas de asistencia</h1>
+
+    <div>
+        <div class="md:flex md:space-x-4 lg:flex lg:space-x-4">
+            <div class="mb-2 md:w-1/2 lg:w-1/3">
+                <label for="fileName" class="mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300">Nombre del archivo</label>
+                <div class="flex">
+                    <span class="border-e-0 inline-flex items-center rounded-s-md border border-gray-300 bg-gray-200 px-3 text-sm text-gray-900 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
+                        <ExcelSvg />
+                    </span>
+                    <input type="text" id="fileName" class="flex-1 block w-full min-w-0 rounded-none rounded-e-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:ring-sky-500 focus:border-sky-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-sky-500 dark:focus:border-sky-500" placeholder="Nombre de ejemplo 123" required>
+                </div>
+            </div>
+
+            <div class="mb-2 md:w-1/2 lg:w-1/3">
+                <label for="file" class="mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300">Subir lista de estudiantes</label>
+                <div class="relative mb-2 w-full">
+                    <InputFile id="file" OnChange="@UploadImages" class="opacity-0 absolute inset-0 h-full w-full cursor-pointer" accept=".xls,.xlsx" required />
+                    @* <InputFile id="file" class="opacity-0 absolute inset-0 h-full w-full cursor-pointer" required /> *@
+                    <label for="file" class="flex w-full cursor-pointer items-center justify-center rounded-lg border border-gray-300 bg-gray-200 px-4 py-2 text-gray-900 focus-within:ring-2 focus-within:ring-sky-500 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600 dark:focus-within:ring-sky-600">
+                        <span class="te mr-2 inline-block">Subir archivo</span>
+                        <FileSvg />
+                    </label>
+                </div>
+            </div>
+
+            <div class="mb-2 md:w-1/2 lg:w-1/3">
+                <label for="professor" class="mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300">Nombre del docente</label>
+                <div class="flex">
+                    <span class="border-e-0 inline-flex items-center rounded-s-md border border-gray-300 bg-gray-200 px-3 text-sm text-gray-900 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
+                        <ProfessorSvg />
+                    </span>
+                    <input id="professor" type="text" class="flex-1 block w-full min-w-0 rounded-none rounded-e-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:ring-sky-500 focus:border-sky-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-sky-500 dark:focus:border-sky-500" placeholder="Nombre y apellido" required>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex space-x-4">
+            <div class="flex-shrink-0 mb-2 w-1/6">
+                <fieldset>
+                    <legend class="sr-only">Tipo de lista</legend>
+
+                    <div class="mb-2 flex items-center">
+                        <input id="country-option-1" type="radio" name="tipo" value="Normal" class="h-4 w-4 border-gray-300 focus:ring-2 focus:ring-sky-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-sky-600 dark:focus:bg-sky-600" checked>
+                        <label for="country-option-1" class="ms-2 block text-sm font-medium text-gray-900 dark:text-gray-300">Normal</label>
+                    </div>
+
+                    <div class="mb-2 flex items-center">
+                        <input id="country-option-2" type="radio" name="tipo" value="Lego" class="h-4 w-4 border-gray-300 focus:ring-2 focus:ring-sky-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-sky-600 dark:focus:bg-sky-600">
+                        <label for="country-option-2" class="ms-2 block text-sm font-medium text-gray-900 dark:text-gray-300">LEGO</label>
+                    </div>
+                </fieldset>
+            </div>
+
+            <div id="second-file" class="mb-2 flex-grow">
+                <div class="relative mb-2 w-full">
+                    <input type="file" id="comparative-file" class="opacity-0 absolute inset-0 h-full w-full cursor-pointer" required>
+                    <label for="comparative-file" class="flex w-full cursor-pointer items-center justify-center rounded-lg border border-gray-300 bg-gray-200 px-4 py-2 text-gray-900 focus-within:ring-2 focus-within:ring-sky-500 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600 dark:focus-within:ring-sky-600">
+                        <span class="mr-2 inline-block">Subir segundo archivo</span>
+                        <FileSvg />
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="md:flex md:space-x-4 lg:flex lg:space-x-4">
+            <div class="flex-shrink-0 mb-2 md:w-1/6">
+                <label for="num-sessions" class="mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300">Número de sesiones</label>
+                <select id="num-sessions" class="mb-3 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-base text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-300 focus:border-sky-300 dark:bg-gray-700 dark:text-gray-300 dark:placeholder-gray-500 dark:border-gray-600 dark:focus:ring-sky-600 dark:focus:border-sky-600">
+                    <option value="2">2</option>
+                    <option value="4">4</option>
+                    <option value="8">8</option>
+                </select>
+            </div>
+
+            <div id="dates-sessions" class="mb-2 md:flex-grow">
+
+            </div>
+        </div>
+
+        <div class="flex space-x-4">
+            <div class="mb-2 w-1/2">
+                <label for="document-title" class="mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300">Título del archivo</label>
+                <div class="flex">
+                    <span class="border-e-0 inline-flex items-center rounded-s-md border border-gray-300 bg-gray-200 px-3 text-sm text-gray-900 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
+                        <TitleSvg />
+                    </span>
+                    <input type="text" id="document-title" class="flex-1 block w-full min-w-0 rounded-none rounded-e-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:ring-sky-500 focus:border-sky-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-sky-500 dark:focus:border-sky-500" placeholder="Asignatura XXIV" required>
+                </div>
+            </div>
+
+            <div id="students-status-section" class="mb-2 w-1/2">
+                <label for="students-status" class="mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300">Estado de los alumnos</label>
+                <select id="students-status" class="mb-3 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-base text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-300 focus:border-sky-300 dark:bg-gray-700 dark:text-gray-300 dark:placeholder-gray-500 dark:border-gray-600 dark:focus:ring-sky-600 dark:focus:border-sky-600">
+                    <option value="1">Inscrito</option>
+                    <option value="2">Baja</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="mt-4 flex w-full justify-center">
+            <button @onclick="HandleClick" class="w-full transform rounded-full bg-sky-700 px-6 py-3 font-bold text-white shadow-lg transition-transform hover:bg-sky-900 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-sky-700 focus:ring-offset-2 dark:bg-gray-800 dark:text-gray-200 sm:w-auto sm:px-12 dark:hover:bg-gray-900 dark:focus:ring-gray-700"> Enviar </button>
+        </div>
+    </div>
+</section>
