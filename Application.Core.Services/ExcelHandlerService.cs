@@ -8,36 +8,25 @@ public sealed class ExcelHandlerService : IExcelHandler
 {
     public MemoryStream CreateSpreadSheet()
     {
+        int sessions = 2;
+
         using var workbook = new XLWorkbook();
         var worksheet = workbook.AddWorksheet("Asistencia");
 
         #region Template preparation
         worksheet.SheetView.ZoomScale = 55;
 
-        #region Header
-        IXLRange headerMergedCell = worksheet.Range("A2:I3");
-        headerMergedCell.Merge();
-
-        headerMergedCell.Value = "Placeholder";
-
-        headerMergedCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-        headerMergedCell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
-
-        headerMergedCell.Style.Font.FontSize = 20;
-        headerMergedCell.Style.Font.Bold = true;
-        #endregion
-
-        #region Subheader
-        IXLRange subheaderMergedCell = worksheet.Range("A4:I4");
-        subheaderMergedCell.Merge();
-
-        subheaderMergedCell.Value = "Seguimiento de la asistencia del estudiante";
-
-        subheaderMergedCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-        subheaderMergedCell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
-
-        subheaderMergedCell.Style.Font.FontSize = 20;
-        subheaderMergedCell.Style.Font.Bold = true;
+        #region Headers
+        if (sessions < 8)
+        {
+            StyleAndMergeRange(worksheet, "A2:I3", "Placeholder", bold: true, fontSize: 20, wrapText: false);
+            StyleAndMergeRange(worksheet, "A4:I4", "Seguimiento de la asistencia del estudiante", bold: true, fontSize: 20, wrapText: false);
+        }
+        else
+        {
+            StyleAndMergeRange(worksheet, "A2:Q3", "Placeholder", bold: true, fontSize: 20, wrapText: false);
+            StyleAndMergeRange(worksheet, "A4:Q4", "Seguimiento de la asistencia del estudiante", bold: true, fontSize: 20, wrapText: false);
+        }
         #endregion
 
         #region Logo
@@ -48,14 +37,28 @@ public sealed class ExcelHandlerService : IExcelHandler
         #endregion
 
         #region Caption table
-        StyleAndMergeRange(worksheet, "J1:L1", "LEYENDA", bold: true, null, XLBorderStyleValues.Thin);
-        StyleAndMergeRange(worksheet, "K2:L2", "ASISTIÓ", bold: true, null, XLBorderStyleValues.Thin);
-        StyleAndMergeRange(worksheet, "K3:L3", "FALTÓ", bold: true, null, XLBorderStyleValues.Thin);
-        StyleAndMergeRange(worksheet, "K4:L4", "TARDANZA", bold: true, null, XLBorderStyleValues.Thin);
+        if (sessions < 8)
+        {
+            StyleAndMergeRange(worksheet, "J1:L1", "LEYENDA", bold: true, fontSize: 14, wrapText: false, hexColor: null, XLBorderStyleValues.Thin);
+            StyleAndMergeRange(worksheet, "K2:L2", "ASISTIÓ", bold: true, fontSize: 14, wrapText: false, hexColor: null, XLBorderStyleValues.Thin);
+            StyleAndMergeRange(worksheet, "K3:L3", "FALTÓ", bold: true, fontSize: 14, wrapText: false, hexColor: null, XLBorderStyleValues.Thin);
+            StyleAndMergeRange(worksheet, "K4:L4", "TARDANZA", bold: true, fontSize: 14, wrapText: false, hexColor: null, XLBorderStyleValues.Thin);
 
-        StyleAndSetValue(worksheet, "J2", "A", bold: true, null, XLBorderStyleValues.Thin);
-        StyleAndSetValue(worksheet, "J3", "F", bold: true, null, XLBorderStyleValues.Thin);
-        StyleAndSetValue(worksheet, "J4", "T", bold: true, null, XLBorderStyleValues.Thin);
+            StyleAndSetValue(worksheet, "J2", "A", bold: true, fontSize: 14, hexColor: null, XLBorderStyleValues.Thin);
+            StyleAndSetValue(worksheet, "J3", "F", bold: true, fontSize: 14, hexColor: null, XLBorderStyleValues.Thin);
+            StyleAndSetValue(worksheet, "J4", "T", bold: true, fontSize: 14, hexColor: null, XLBorderStyleValues.Thin);
+        }
+        else
+        {
+            StyleAndMergeRange(worksheet, "R1:T1", "LEYENDA", bold: true, fontSize: 14, wrapText: false, hexColor: null, XLBorderStyleValues.Thin);
+            StyleAndMergeRange(worksheet, "S2:T2", "ASISTIÓ", bold: true, fontSize: 14, wrapText: false, hexColor: null, XLBorderStyleValues.Thin);
+            StyleAndMergeRange(worksheet, "S3:T3", "FALTÓ", bold: true, fontSize: 14, wrapText: false, hexColor: null, XLBorderStyleValues.Thin);
+            StyleAndMergeRange(worksheet, "S4:T4", "TARDANZA", bold: true, fontSize: 14, wrapText: false, hexColor: null, XLBorderStyleValues.Thin);
+
+            StyleAndSetValue(worksheet, "R2", "A", bold: true, fontSize: 14, hexColor: null, XLBorderStyleValues.Thin);
+            StyleAndSetValue(worksheet, "R3", "F", bold: true, fontSize: 14, hexColor: null, XLBorderStyleValues.Thin);
+            StyleAndSetValue(worksheet, "R4", "T", bold: true, fontSize: 14, hexColor: null, XLBorderStyleValues.Thin);
+        }
         #endregion
 
         #region Set column widths
@@ -64,9 +67,13 @@ public sealed class ExcelHandlerService : IExcelHandler
         worksheet.Column(3).Width = ExcelHelper.PixelsToNoC(131);
         worksheet.Column(4).Width = ExcelHelper.PixelsToNoC(107);
 
-        for (int i = 5; i <= 12; i++)
+        int startColumn = 5;
+        int endColumn = sessions < 8 ? 12 : 20;
+        double width = sessions < 8 ? ExcelHelper.PixelsToNoC(131) : ExcelHelper.PixelsToNoC(89);
+
+        for (int i = startColumn; i <= endColumn; i++)
         {
-            worksheet.Column(i).Width = ExcelHelper.PixelsToNoC(131);
+            worksheet.Column(i).Width = width;
         }
         #endregion
 
@@ -78,7 +85,7 @@ public sealed class ExcelHandlerService : IExcelHandler
         worksheet.Row(5).Height = ExcelHelper.PixelsToPoints(18);
         worksheet.Row(6).Height = ExcelHelper.PixelsToPoints(31);
         worksheet.Row(7).Height = ExcelHelper.PixelsToPoints(31);
-        worksheet.Row(8).Height = ExcelHelper.PixelsToPoints(64);
+        worksheet.Row(8).Height = sessions < 8 ? ExcelHelper.PixelsToPoints(64) : ExcelHelper.PixelsToPoints(96);
         worksheet.Row(9).Height = ExcelHelper.PixelsToPoints(45);
         worksheet.Row(10).Height = ExcelHelper.PixelsToPoints(36);
 
@@ -89,55 +96,56 @@ public sealed class ExcelHandlerService : IExcelHandler
         #endregion
 
         #region Student column header
-        StyleAndMergeRange(worksheet, "A7:A10", "No", bold: true, "#D9D9D9", XLBorderStyleValues.Thin);
-        StyleAndMergeRange(worksheet, "B7:B10", "APELLIDOS Y NOMBRES", bold: true, "#D9D9D9", XLBorderStyleValues.Thin);
-        StyleAndMergeRange(worksheet, "C7:C10", "Modalidad", bold: true, "#D9D9D9", XLBorderStyleValues.Thin);
-        StyleAndMergeRange(worksheet, "D7:D10", "Estado", bold: true, "#D9D9D9", XLBorderStyleValues.Thin);
-        StyleAndSetValue(worksheet, "E6", "", bold: true, "#404040");
-        StyleAndSetValue(worksheet, "F6", "", bold: true, "#404040");
-        StyleAndSetValue(worksheet, "G6", "", bold: true, "#404040");
-        StyleAndSetValue(worksheet, "H6", "", bold: true, "#404040");
-        StyleAndMergeRange(worksheet, "E7:F7", "01/01/1900", bold: true, "#bfbfbf", XLBorderStyleValues.Thin);
-        StyleAndMergeRange(worksheet, "G7:H7", "02/01/1900", bold: true, "#bfbfbf", XLBorderStyleValues.Thin);
-        StyleAndMergeRange(worksheet, "E8:F8", "Curso II (Placeholder)", bold: true, "#bfbfbf", XLBorderStyleValues.Thin);
-        StyleAndMergeRange(worksheet, "G8:H8", "Curso II (Placeholder)", bold: true, "#bfbfbf", XLBorderStyleValues.Thin);
-        StyleAndMergeRange(worksheet, "E9:F9", "Gianfranco Díaz (Placeholder)", bold: false, "#bfbfbf", XLBorderStyleValues.Thin);
-        StyleAndMergeRange(worksheet, "G9:H9", "Gianfranco Díaz (Placeholder)", bold: false, "#bfbfbf", XLBorderStyleValues.Thin);
-        StyleAndSetValue(worksheet, "E10", "1°", bold: true, "#d9d9d9", XLBorderStyleValues.Thin);
-        StyleAndSetValue(worksheet, "F10", "2°", bold: true, "#d9d9d9", XLBorderStyleValues.Thin);
-        StyleAndSetValue(worksheet, "G10", "1°", bold: true, "#d9d9d9", XLBorderStyleValues.Thin);
-        StyleAndSetValue(worksheet, "H10", "2°", bold: true, "#d9d9d9", XLBorderStyleValues.Thin);
+        StyleAndMergeRange(worksheet, "A7:A10", "No", bold: true, fontSize: 14, wrapText: false, ExcelHelper.LightGray, XLBorderStyleValues.Thin);
+        StyleAndMergeRange(worksheet, "B7:B10", "APELLIDOS Y NOMBRES", bold: true, fontSize: 14, wrapText: false, ExcelHelper.LightGray, XLBorderStyleValues.Thin);
+        StyleAndMergeRange(worksheet, "C7:C10", "Modalidad", bold: true, fontSize: 14, wrapText: false, ExcelHelper.LightGray, XLBorderStyleValues.Thin);
+        StyleAndMergeRange(worksheet, "D7:D10", "Estado", bold: true, fontSize: 14, wrapText: false, ExcelHelper.LightGray, XLBorderStyleValues.Thin);
+
+        for (int i = 0; i < sessions; i++)
+        {
+            int baseColumn = 5 + i * 2;
+            string col1 = ExcelHelper.GetColumnLetter(baseColumn);
+            string col2 = ExcelHelper.GetColumnLetter(baseColumn + 1);
+            string col3 = ExcelHelper.GetColumnLetter(baseColumn + 2);
+            string col4 = ExcelHelper.GetColumnLetter(baseColumn + 3);
+
+            StyleAndSetValue(worksheet, $"{col1}6", string.Empty, bold: true, fontSize: 14, ExcelHelper.DarkGray);
+            StyleAndSetValue(worksheet, $"{col2}6", string.Empty, bold: true, fontSize: 14, ExcelHelper.DarkGray);
+            StyleAndMergeRange(worksheet, $"{col1}7:{col2}7", "01/01/1900", bold: true, fontSize: 14, wrapText: false, ExcelHelper.Gray, XLBorderStyleValues.Thin);
+            StyleAndMergeRange(worksheet, $"{col1}8:{col2}8", "Curso II (Placeholder)", bold: true, fontSize: 14, wrapText: true, ExcelHelper.Gray, XLBorderStyleValues.Thin);
+            StyleAndMergeRange(worksheet, $"{col1}9:{col2}9", "Gianfranco Díaz (Placeholder)", bold: false, fontSize: 14, wrapText: true, ExcelHelper.Gray, XLBorderStyleValues.Thin);
+            StyleAndSetValue(worksheet, $"{col1}10", "1°", bold: true, fontSize: 14, ExcelHelper.LightGray, XLBorderStyleValues.Thin);
+            StyleAndSetValue(worksheet, $"{col2}10", "2°", bold: true, fontSize: 14, ExcelHelper.LightGray, XLBorderStyleValues.Thin);
+            StyleRange(worksheet, $"{col1}11:{col1}58", bold: false, fontSize: 11, XLAlignmentHorizontalValues.Center, XLAlignmentVerticalValues.Center, XLBorderStyleValues.Thin);
+            StyleRange(worksheet, $"{col2}11:{col2}58", bold: false, fontSize: 11, XLAlignmentHorizontalValues.Center, XLAlignmentVerticalValues.Center, XLBorderStyleValues.Thin);
+        }
         #endregion
 
-        #region Set row border
-        IXLRange contentRange = worksheet.Range("A11:H58");
-
-        contentRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
-        contentRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
-        
-        contentRange.Style.Font.FontSize = 14;
+        #region Set content styles
+        StyleRange(worksheet, "A11:A58", bold: true, fontSize: 16, XLAlignmentHorizontalValues.Center, XLAlignmentVerticalValues.Center, XLBorderStyleValues.Thin);
+        StyleRange(worksheet, "B11:B58", bold: false, fontSize: 15, XLAlignmentHorizontalValues.Left, XLAlignmentVerticalValues.Center, XLBorderStyleValues.Thin);
+        StyleRange(worksheet, "C11:C58", bold: false, fontSize: 15, XLAlignmentHorizontalValues.Center, XLAlignmentVerticalValues.Center, XLBorderStyleValues.Thin);
+        StyleRange(worksheet, "D11:D58", bold: false, fontSize: 15, XLAlignmentHorizontalValues.Center, XLAlignmentVerticalValues.Center, XLBorderStyleValues.Thin);
         #endregion
         #endregion
 
         foreach (var cell in worksheet.CellsUsed())
         {
-            cell.Style.Font.FontName = "Arial"; // Set font to Arial
+            cell.Style.Font.FontName = "Arial";
         }
 
         worksheet.SheetView.FreezeRows(10);
         worksheet.SheetView.FreezeColumns(2);
 
-        // Save to MemoryStream instead of file
         var stream = new MemoryStream();
         workbook.SaveAs(stream);
 
-        // Reset the position of the stream to the beginning
         stream.Position = 0;
 
         return stream;
     }
 
-    public void StyleAndMergeRange(IXLWorksheet worksheet, string rangeAddress, string value, bool bold, string? hexColor = null, XLBorderStyleValues? outsideBorder = null)
+    public void StyleAndMergeRange(IXLWorksheet worksheet, string rangeAddress, string value, bool bold, double fontSize, bool wrapText, string? hexColor = null, XLBorderStyleValues? outsideBorder = null)
     {
         IXLRange range = worksheet.Range(rangeAddress);
         range.Merge();
@@ -152,8 +160,9 @@ public sealed class ExcelHandlerService : IExcelHandler
             range.Style.Border.OutsideBorder = outsideBorder.Value;
         }
         
-        range.Style.Font.FontSize = 14;
+        range.Style.Font.FontSize = fontSize;
         range.Style.Font.Bold = bold;
+        range.Style.Alignment.WrapText = wrapText;
 
         if (!string.IsNullOrEmpty(hexColor))
         {
@@ -161,7 +170,25 @@ public sealed class ExcelHandlerService : IExcelHandler
         }
     }
 
-    private void StyleAndSetValue(IXLWorksheet worksheet, string cellAddress, string value, bool bold, string? hexColor = null, XLBorderStyleValues? outsideBorder = null)
+    public void StyleRange(IXLWorksheet worksheet, string rangeAddress, bool bold, double fontSize, XLAlignmentHorizontalValues horizontalAlignment, XLAlignmentVerticalValues verticalAlignment, XLBorderStyleValues? border = null)
+    {
+        IXLRange range = worksheet.Range(rangeAddress);
+
+        range.Style.Alignment.Horizontal = horizontalAlignment;
+        range.Style.Alignment.Vertical = verticalAlignment;
+
+        if (border is not null)
+        {
+            range.Style.Border.OutsideBorder = border.Value;
+            range.Style.Border.InsideBorder = border.Value;
+        }
+
+        range.Style.Font.FontSize = fontSize;
+        range.Style.Font.Bold = bold;
+        range.Style.Font.FontName = "Arial";
+    }
+
+    private void StyleAndSetValue(IXLWorksheet worksheet, string cellAddress, string value, bool bold, double fontSize, string? hexColor = null, XLBorderStyleValues? outsideBorder = null)
     {
         IXLCell cell = worksheet.Cell(cellAddress);
         cell.Value = value;
@@ -174,7 +201,7 @@ public sealed class ExcelHandlerService : IExcelHandler
             cell.Style.Border.OutsideBorder = outsideBorder.Value;
         }
         
-        cell.Style.Font.FontSize = 14;
+        cell.Style.Font.FontSize = fontSize;
         cell.Style.Font.Bold = bold;
 
         if (!string.IsNullOrEmpty(hexColor))
