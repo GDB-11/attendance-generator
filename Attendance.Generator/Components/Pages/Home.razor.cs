@@ -1,5 +1,7 @@
 using Application.Core.Interfaces;
 using Attendance.Generator.Models.Home;
+using Attendance.Generator.Models.Home.Extensions;
+using FluentResults;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
@@ -18,76 +20,80 @@ public partial class Home
 
     private List<DateInputModel>? datesContainer;
 
-    private string minDate = DateTime.Now.ToString("yyyy-MM-dd");
+    private readonly string minDate = DateTime.Now.ToString("yyyy-MM-dd");
 
     private int selectedSessions = 2;
+
+    private ExcelModel model = new();
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
+
         UpdateDatesContainer(selectedSessions);
     }
 
     private void OnSessionChange(ChangeEventArgs e)
     {
         selectedSessions = int.Parse(e.Value.ToString());
+
         UpdateDatesContainer(selectedSessions);
     }
 
     private void UpdateDatesContainer(int numSessions)
     {
-        datesContainer = new List<DateInputModel>();
+        datesContainer = [];
 
         for (int i = 0; i < numSessions; i++)
         {
-            var className = numSessions == 2 ? "flex-1 min-w-[20%]" : "flex-1 min-w-[45%] md:min-w-[22%] 2xl:min-w-[10%]";
+            string className = numSessions == 2 ? "flex-1 min-w-[20%]" : "flex-1 min-w-[45%] md:min-w-[22%] 2xl:min-w-[10%]";
+
             datesContainer.Add(new DateInputModel { LabelText = $"Clase {i + 1}", ClassName = className });
         }
     }
 
     private void OnRadioChange(ChangeEventArgs e)
     {
-        var selectedValue = e.Value.ToString();
+        string? selectedValue = e.Value?.ToString();
+
         isLegoSelected = selectedValue == "Lego";
     }
 
-    private async void HandleClick()
+    private async Task HandleClick()
     {
-        // Generate the Excel file as a MemoryStream
-        var stream = StudentAttendanceService.ProcessData(null);
+        Result<MemoryStream> stream = StudentAttendanceService.ProcessData(model.MapToAttendanceModel());
 
         if (stream.IsFailed)
         {
             return;
         }
 
-        // Create a byte array from the MemoryStream
-        var buffer = stream.Value.ToArray();
+        byte[] buffer = stream.Value.ToArray();
 
-        // Use JavaScript interop to trigger the download in the browser
-        var base64 = Convert.ToBase64String(buffer);
+        string base64 = Convert.ToBase64String(buffer);
 
-        await JSRuntime.InvokeVoidAsync("downloadFile", "Asistencia.xlsx", base64);
+        await JSRuntime.InvokeVoidAsync("downloadFile", $"{model.OutputFileName}.xlsx", base64);
     }
 
-    private async Task UploadImages(InputFileChangeEventArgs args)
+    private async Task UploadMainStudentFile(InputFileChangeEventArgs args)
     {
-        try
-        {
-            //var currentTime = DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss");
-            //var path = Path.Combine(_webHostEnvironment.WebRootPath, $@"UserData/dummy/UploadTest/{currentTime}");
-            //Directory.CreateDirectory(path);
-            var file = args.File;
-            /*foreach (var file in files)
-            {
-                var filePath = Path.Combine(path, file.Name);
-                await using FileStream fs = new(filePath, FileMode.Create);
-                await file.OpenReadStream().CopyToAsync(fs);
-            }*/
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-        }
+        IBrowserFile file = args.File;
+
+        using var stream = new MemoryStream();
+
+        await file.OpenReadStream().CopyToAsync(stream);
+
+        model.MainStudentFile = stream;
+    }
+
+    private async Task UploadComparativeStudentFile(InputFileChangeEventArgs args)
+    {
+        IBrowserFile file = args.File;
+
+        using var stream = new MemoryStream();
+
+        await file.OpenReadStream().CopyToAsync(stream);
+
+        model.SecondaryStudentFile = stream;
     }
 }

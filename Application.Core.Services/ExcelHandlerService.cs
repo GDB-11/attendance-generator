@@ -6,10 +6,8 @@ namespace Application.Core.Services;
 
 public sealed class ExcelHandlerService : IExcelHandler
 {
-    public MemoryStream CreateSpreadSheet()
+    public MemoryStream CreateSpreadSheet(int sessions)
     {
-        int sessions = 2;
-
         using var workbook = new XLWorkbook();
         var worksheet = workbook.AddWorksheet("Asistencia");
 

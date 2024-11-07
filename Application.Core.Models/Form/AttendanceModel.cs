@@ -4,7 +4,6 @@ namespace Application.Core.Models.Form;
 
 public sealed record AttendanceModel
 {
-    public required string OutputFileName { get; init; }
     public required string MainStudentFile { get; init; }
     public required string ProfessorName { get; init; }
     public AttendanceType Type { get; init; }
@@ -19,4 +18,5 @@ public sealed record AttendanceModel
     public DateTime? Session7 { get; init; }
     public DateTime? Session8 { get; init; }
     public StudentsStatus? StudentsStatus { get; init; }
+    public required string Title { get; init; }
 }

@@ -15,7 +15,7 @@ public sealed class StudentAttendanceService : IStudentAttendance
 
     public Result<MemoryStream> ProcessData(AttendanceModel attendance)
     {
-        MemoryStream file = _excelHandler.CreateSpreadSheet();
+        MemoryStream file = _excelHandler.CreateSpreadSheet(attendance.Sessions);
 
         return Result.Ok(file);
     }

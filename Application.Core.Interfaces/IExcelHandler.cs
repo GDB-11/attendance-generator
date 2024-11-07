@@ -2,5 +2,5 @@
 
 public interface IExcelHandler
 {
-    MemoryStream CreateSpreadSheet();
+    MemoryStream CreateSpreadSheet(int sessions);
 }
